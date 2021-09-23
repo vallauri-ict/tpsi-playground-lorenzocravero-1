@@ -1,12 +1,23 @@
-# Repository TPSI di Lorenzo Cravero
+<h1 align="center">Repository TPSI di Lorenzo Cravero</h1>
 
-*Progetti su:*
+<h1 align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/512px-HTML5_logo_and_wordmark.svg.png" width="150px" href="https://www.html.it/"/>
+  <img src="http://maurizioregoli.it/wp-content/uploads/2021/01/programmatore-siena-javascript-2752148-2284965.png" width="150px" href="https://www.javascript.com/"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/1200px-Typescript_logo_2020.svg.png" width="150px" href="https://www.typescriptlang.org/"/></br>
+</h1>
 
-  - *Node Js*
+*Troverete progetti sulla gestione dei server:*
+
+  - *Javascript*
   - *Typescript*
 
 *Per clonare il repository:*
-- *premere sul bottone verde code e copiare il percorso del repository*
-- *aprire una CMD o Windows powershell nell'ambiente dove si vuole clonare la cartella*
-- *eseguire il comando git clone incollando il percorso copiato*
-- *premere invio*
+- copia questo link
+```bash
+https://github.com/vallauri-ict/tpsi-playground-lorenzocravero-1
+```
+- *aprire la CMD o Windows powershell da dove si vuole clonare la cartella*
+- *digitare il comando **git clone** e incollare il percorso copiato*
+- *premere **invio***
+
+*Sono a disposizione per ogni domanda, chiarimento o proposta di collaborazione*

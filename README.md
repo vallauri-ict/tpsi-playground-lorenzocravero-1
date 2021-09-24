@@ -12,7 +12,7 @@
   - *Typescript*
 
 *Per clonare il repository:*
-- copia questo link
+- copiare questo link
 ```bash
 https://github.com/vallauri-ict/tpsi-playground-lorenzocravero-1
 ```

@@ -1,0 +1,2 @@
+### Ese_03 Creazione di un modulo
+*Abbiamo creato un modulo e lo abbiamo esportato nel main per accedere alle function. Abbiamo visto la differenza fra function anonima e con nome e creato una piccola classe in ES6*

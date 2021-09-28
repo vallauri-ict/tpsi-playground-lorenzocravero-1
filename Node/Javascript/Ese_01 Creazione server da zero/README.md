@@ -1,0 +1,2 @@
+### Ese_01 Creazione di un server
+*Abbiamo creato un server da zero utilizzando i due comandi fondamentali http.createServer() e server.listen() i quali rispettivamente creano il server e lo mettono in ascolto sulla porta che noi decidiamo (generalmente per localhost si usa la 1337)*

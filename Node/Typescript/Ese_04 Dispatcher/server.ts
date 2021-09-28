@@ -1,3 +1,3 @@
+//questo file è il main
 "use strict"
 
-//questo file è il main

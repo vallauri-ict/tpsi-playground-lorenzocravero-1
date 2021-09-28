@@ -1,0 +1,2 @@
+### Ese_02 Lettura di un file - Javascript
+*In questo esercizio abbiamo visto come avviene lato server la gestione di una richiesta di pagina o servizio e,a seconda del tipo di file, la creazione di una risposta da inviare al chiamante*

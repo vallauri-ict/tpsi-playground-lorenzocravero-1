@@ -1,10 +1,8 @@
 "use strict";
 
-const PHP = true
-
 function inviaRichiesta(method, url, parameters={}) {
 	let contentType;
-	if(method.toUpperCase()=="GET" || PHP)
+	if(method.toUpperCase()=="GET")
 		contentType="application/x-www-form-urlencoded;charset=utf-8";
 	else{
 		contentType = "application/json; charset=utf-8"

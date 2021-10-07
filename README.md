@@ -11,7 +11,7 @@
   - *Javascript*
   - *Typescript*
 
-*Nel repository troverete inoltre un Dispatcher, ovvero il thread che legge le richieste provenienti dal client e le elabora per restiruire una risposta.
+*Nel repository troverete inoltre un **Dispatcher**, ovvero il thread che legge le richieste provenienti dal client e le elabora per restiruire una risposta.
 Il dispatcher che abbiamo creato è testato e funzionante, pronto per essere utilizzato in tutti gli esercizi.*
 
 *Per clonare il repository:*

@@ -13,28 +13,72 @@ $(document).ready(function() {
     request.fail(errore);
     request.done(function(data){
         nazioni = data["Nazioni"];
-        //console.log(nazioni);
 
         for (const nazione of nazioni) 
         {
             let li = $("<li>");
             li.text(nazione);
-            li.prop("nazione", nazione);
-            li.appendTo(_lstNazioni);
+            li.appendTo(_lstNazioni);    
         }
     });
 
-    _lstNazioni.on("click", "li",function(){
+    _lstNazioni.on("click","li",visualizzaPersone);
 
-        console.log(this.text);
-        let currentNazione = _lstNazioni.text();
+    function visualizzaPersone(){
+        let currentNazione = $(this).text();
         console.log(currentNazione);
-        let request = inviaRichiesta("get","/api/persone",{"nazione" : currentNazione});
+
+        let request = inviaRichiesta("get","/api/elencoPersone",{"nazione" : currentNazione});
         request.fail(errore);
         request.done(function(data){
-            console.log(data);
-            persone = data;
+            //console.log(data);
+            persone = data["Persone"];
+            _tabStudenti.empty();
+            for (const persona of persone) 
+            {
+                let tr = $("<tr>");
+                tr.appendTo(_tabStudenti);
+
+                let td = $("<td>");
+                td.appendTo(tr);
+                td.text(persona.name);
+
+                td = $("<td>");
+                td.appendTo(tr);
+                td.text(persona.city);
+
+                td = $("<td>");
+                td.appendTo(tr);
+                td.text(persona.state);
+
+                td = $("<td>");
+                td.appendTo(tr);
+                td.text(persona.cell);
+
+                td = $("<td>");
+                td.appendTo(tr);
+                let btnDettagli = $("<button>");
+                btnDettagli.text("Dettagli");
+                btnDettagli.prop("persona",persona);
+                btnDettagli.on("click",visualizzaDettagli);
+                btnDettagli.appendTo(td);
+
+                td = $("<td>");
+                td.appendTo(tr);
+                let btnElimina = $("<button>");
+                btnElimina.text("Elimina");
+                btnElimina.on("click",elimina);
+                btnElimina.appendTo(td);
+            }
         })
-    });
- 
+
+        function visualizzaDettagli(){
+            console.log($(this).prop("persona").name);
+        }
+    
+        function elimina(){
+            
+        }
+    }
+
 })

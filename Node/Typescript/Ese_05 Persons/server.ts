@@ -21,7 +21,6 @@ console.log("Server in ascolto sulla porta " + PORT);
 
 //registriamo i servizi che vogliamo fornire PRIMA che arrivi qualsiasi tipo di richiesta dal client
 dispatcher.addListener("GET","/api/nazioni",function(req,res){
-    res.writeHead(200, HEADERS.json);
     let nazioni = [];
     for (const person of persons["results"]) 
     {
@@ -31,23 +30,28 @@ dispatcher.addListener("GET","/api/nazioni",function(req,res){
         }
     }
     nazioni.sort();
+    res.writeHead(200, HEADERS.json);
     res.write(JSON.stringify({"Nazioni" : nazioni}));
     res.end();
 });
 
-dispatcher.addListener("GET","/api/persone",function(req,res){
+dispatcher.addListener("GET","/api/elencoPersone",function(req,res){
     let persone = [];
     let currentNazione = req["GET"].nazione;
     for (const person of persons["results"]) 
     {
-        let aus = {
-            "name" : person.name.title + " " + person.name.first + " " + person.name.last,
-            "city" : person.city,
-            "state" : currentNazione,
-            "cell" : person.cell
-        };
-        persone.push(aus);
+        if(person.location.country == currentNazione)
+        {
+            let json = {
+                "name" : person.name.title + " " + person.name.first + " " + person.name.last,
+                "city" : person.location.city,
+                "state" : person.location.state,
+                "cell" : person.cell
+            };
+            persone.push(json);
+        }
     }
+    res.writeHead(200, HEADERS.json);
     res.write(JSON.stringify({"Persone" : persone}));
     res.end();
 });

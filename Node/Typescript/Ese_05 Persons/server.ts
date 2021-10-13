@@ -2,14 +2,16 @@
 "use strict"
 
 import * as _http from "http";
-let HEADERS = require("./headers.json");
-let persons = require("./persons.json");
+import {HEADERS} from "./headers";
+import {persons} from "./persons";
 
 //NB: esportiamo in questa maniera perchè in dispatcher non c'è alcuna funzione
 //o metodo o property al di fuori della classe dispatcher in se
 //nel caso in cui ci siano più funzioni, vedere esercizio 3.
-let dispatcher = require("./dispatcher.ts");
-const PORT:number = 1337;
+import {Dispatcher} from "./dispatcher";
+const PORT:number = 1340;
+
+let dispatcher = new Dispatcher();
 
 let server = _http.createServer(function(req,res){
     dispatcher.dispatch(req,res);
@@ -54,4 +56,58 @@ dispatcher.addListener("GET","/api/elencoPersone",function(req,res){
     res.writeHead(200, HEADERS.json);
     res.write(JSON.stringify({"Persone" : persone}));
     res.end();
+});
+
+dispatcher.addListener("PATCH","/api/dettagli",function(req,res){
+    let trovato = false;
+    let personReq = req["BODY"].name;
+    let person;
+    for (person of persons["results"]) 
+    {
+        if((person.name.title + " " + person.name.first + " " + person.name.last) == personReq)
+        {
+            trovato = true;
+            break;
+        }
+    }
+    if(trovato)
+    {
+        res.writeHead(200, HEADERS.json);
+        res.write(JSON.stringify(person));
+        res.end();
+    }
+    else
+    {
+        res.writeHead(200, HEADERS.text);
+        res.write("Persona non trovata");
+        res.end();
+    }
+});
+
+dispatcher.addListener("DELETE","/api/elimina",function(req,res){
+    let trovato = false;
+    let personReq = req["BODY"].name;
+    let i;
+    for (i = 0; i < persons["results"].length; i++) 
+    {
+        if((persons["results"][i].name.title + " " + persons["results"][i].name.first + " " + persons["results"][i].name.last) == personReq)
+        {
+            trovato = true;
+            break;
+        }
+        
+    }
+    if(trovato)
+    {
+        persons.results.splice(i,1);
+        res.writeHead(200, HEADERS.json);
+        res.write(JSON.stringify("Persona eliminata"));
+        res.end();
+    }
+    else
+    {
+        res.writeHead(200, HEADERS.text);
+        res.write("Persona non trovata");
+        res.end();
+    }
 });

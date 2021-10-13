@@ -11,11 +11,11 @@ import { inherits } from "util";
 import { isGeneratorFunction } from "util/types";
 
 //headers non ha un wrap come typescript quindi dobbiamo usare require per forza
-let HEADERS = require("./headers.json");
+import {HEADERS} from "./headers";
 let paginaErrore : string;
 
 //dichiariamo la classe dispatcher tramite sintassi ES6
-class dispatcher{
+export class Dispatcher{
     prompt:string = ">>> "
     //listener è un json costituito da 5 campi che corrispondono a tutte le chiamate http possibili
     //ogni listener è a sua volta costituito da un json {"risorsa":"callback"}
@@ -170,5 +170,4 @@ function init(){
 }
 
 //esportiamo l'istanza della classe in forma anonima
-module.exports = new dispatcher();
 

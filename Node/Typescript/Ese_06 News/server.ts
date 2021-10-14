@@ -34,8 +34,8 @@ dispatcher.addListener("POST","/api/dettagli",function(req,res){
     console.log(risorsa);
     _fs.readFile(risorsa, function (err, data) {
         if (!err) {
-          res.writeHead(200, HEADERS.text);
-          res.write(data);
+          res.writeHead(200, HEADERS.json);
+          res.write(JSON.stringify({ "text" :`${data}`}));
         } else {
           res.writeHead(404, HEADERS.html);
           res.write("<h1>File non trovato</h1>");

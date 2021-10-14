@@ -43,7 +43,7 @@ $(document).ready(function(){
         let request = inviaRichiesta("post","/api/dettagli",{"nomeFile" : nomeFile, "titolo" : titolo});
         request.fail(errore);
         request.done(function(message){
-            news.html(message);
+            news.html(message.text);
         })
     }
 })

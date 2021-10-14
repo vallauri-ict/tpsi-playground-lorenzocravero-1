@@ -9,7 +9,7 @@ import {persons} from "./persons";
 //o metodo o property al di fuori della classe dispatcher in se
 //nel caso in cui ci siano più funzioni, vedere esercizio 3.
 import {Dispatcher} from "./dispatcher";
-const PORT:number = 1340;
+const PORT:number = 1337;
 
 let dispatcher = new Dispatcher();
 
@@ -85,29 +85,29 @@ dispatcher.addListener("PATCH","/api/dettagli",function(req,res){
 });
 
 dispatcher.addListener("DELETE","/api/elimina",function(req,res){
+    let persona = req["BODY"].persona;
     let trovato = false;
-    let personReq = req["BODY"].name;
     let i;
-    for (i = 0; i < persons["results"].length; i++) 
-    {
-        if((persons["results"][i].name.title + " " + persons["results"][i].name.first + " " + persons["results"][i].name.last) == personReq)
+
+    for (i = 0; i < persons.results.length; i++) {
+        let name = persons.results[i].name.title + " " + persons.results[i].name.first + " " + persons.results[i].name.last
+        if(persona == name)
         {
             trovato = true;
             break;
         }
-        
     }
     if(trovato)
     {
         persons.results.splice(i,1);
         res.writeHead(200, HEADERS.json);
-        res.write(JSON.stringify("Persona eliminata"));
+        res.write(JSON.stringify("Persona eliminata correttamente"));
         res.end();
     }
     else
     {
-        res.writeHead(200, HEADERS.text);
+        res.writeHead(404, HEADERS.text);
         res.write("Persona non trovata");
         res.end();
-    }
+    }  
 });

@@ -6,10 +6,10 @@ $(document).ready(function() {
     let nazioni;
     let persone;
     let selectedNation;
-    let first = _divDettagli.find("a").eq(0);
-    let last = _divDettagli.find("a").eq(1);
-    let next = _divDettagli.find("a").eq(2);
-    let previous = _divDettagli.find("a").eq(3);
+    let first = _divDettagli.find("button").eq(0);
+    let last = _divDettagli.find("button").eq(3);
+    let next = _divDettagli.find("button").eq(2);
+    let previous = _divDettagli.find("button").eq(1);
     let vetPersone = [];
     let i;
     let index;
@@ -82,71 +82,89 @@ $(document).ready(function() {
                 td = $("<td>");
                 td.appendTo(tr);
                 let btnElimina = $("<button>");
+                btnElimina.prop("name",persona.name);
                 btnElimina.text("Elimina");
                 btnElimina.appendTo(td);
                 
                 i++;
             }
-            console.log(vetPersone);
         })
 
         _tabStudenti.on("click","button:contains(Elimina)",function(){
-            let request = inviaRichiesta("DELETE","/api/elimina",{"person" : $(this).prop("name")});
-            request.fail(errore);
-            request.done(function(message){
-                alert(message);
+            let persona = $(this).prop("name");
+            let requestElimina = inviaRichiesta("DELETE", "/api/elimina",{"persona":persona});
+            requestElimina.fail(errore);
+            requestElimina.done(function(message){
+            alert(message);
                 visualizzaPersone();
-            })
-        });
-
-        function visualizzaDettagli(){
-            _divDettagli.show();
-            if(click)
-            {
-                index = $(this).prop("indice"); 
-            }
-            let name = vetPersone[index];
-            let request = inviaRichiesta("patch","/api/dettagli",{"name" : name});
-            request.fail(errore);
-            request.done(function(person){
-                console.log(person);
-                $(".card-img-top").prop("src",person.picture.thumbnail);
-                $(".card-title").text(name);
-                let s = `<b>Gender: </b> ${person.gender} </br>`;
-                s += `<b>Address: </b> ${JSON.stringify(person.location)} </br>`;
-                s += `<b>Email: </b> ${person.email} </br>`;
-                s += `<b>Dob: </b> ${JSON.stringify(person.dob)} </br>`;
-                $(".card-text").html(s);
+                window.location.reload();
             });
-            click = true;
-        }
-
-        first.on("click",function(){
-            console.log(index);
-            index = 0;
-            click = false;
-            visualizzaDettagli();
-        });
-    
-        last.on("click",function(){
-            console.log(index);
-            index = vetPersone.length -1;
-            click = false;
-            visualizzaDettagli();
-        });
-    
-        next.on("click",function(){
-            console.log(index);
-            index+=1;
-            click = false;
-            visualizzaDettagli();
-        });
-    
-        previous.on("click",function(){
-            console.log(index);
-		    index-=1;
-            click = false;
-            visualizzaDettagli();
         });
     }
+
+    function visualizzaDettagli(){
+        _divDettagli.show();
+        if(click)
+        {
+            index = $(this).prop("indice"); 
+            console.log(index);
+        }
+        console.log(index);
+        let name = vetPersone[index];
+        let request = inviaRichiesta("patch","/api/dettagli",{"name" : name});
+        request.fail(errore);
+        request.done(function(person){
+            //console.log(person);
+            $(".card-img-top").prop("src",person.picture.thumbnail);
+            $(".card-title").text(name);
+            let s = `<b>Gender: </b> ${person.gender} </br>`;
+            s += `<b>Address: </b> ${JSON.stringify(person.location)} </br>`;
+            s += `<b>Email: </b> ${person.email} </br>`;
+            s += `<b>Dob: </b> ${JSON.stringify(person.dob)} </br>`;
+            $(".card-text").html(s);
+        });
+        click = true;
+    }
+
+    first.on("click",function(){
+        index = 0;
+        previous.css("visibility","hidden");
+        next.css("visibility","visible");
+        click = false;
+        visualizzaDettagli();
+    });
+
+    last.on("click",function(){
+        index = vetPersone.length -1;
+        previous.css("visibility","visible");
+        next.css("visibility","hidden");
+        click = false;
+        visualizzaDettagli();
+    });
+
+    next.on("click",function(){
+		previous.css("visibility","visible");
+		index++;
+		if(index==vetPersone.length-1)
+		{
+			next.css("visibility","hidden");
+		}
+        click = false;
+        visualizzaDettagli();
+    });
+
+    previous.on("click",function(){
+		if(index>=0)
+		{
+			index--;
+			next.css("visibility","visible");
+		}
+		if(index==0)
+		{
+			previous.css("visibility","hidden");
+		}
+		
+        click = false;
+        visualizzaDettagli();
+    });
 })

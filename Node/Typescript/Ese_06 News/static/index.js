@@ -40,10 +40,17 @@ $(document).ready(function(){
     function visualizzaDettagli(){
         let titolo = $(this).prop("notizia").titolo;
         let nomeFile = $(this).prop("notizia").file;
-        let request = inviaRichiesta("post","/api/dettagli",{"nomeFile" : nomeFile, "titolo" : titolo});
+        let _this = $(this);
+        let request = inviaRichiesta("post","/api/dettagli",{"nomeFile" : nomeFile });
         request.fail(errore);
         request.done(function(message){
             news.html(message.text);
+        })
+
+        let request2 = inviaRichiesta("post","/api/visual",{"titolo" : titolo});
+        request2.fail(errore);
+        request2.done(function(data){
+            _this.next().text("visualizzato " + data.visual + " volte");
         })
     }
 })

@@ -6,12 +6,14 @@
   <a href="https://www.typescriptlang.org/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/1200px-Typescript_logo_2020.svg.png" width="150px" /></br></a>
 </h1>
 
-*Troverete progetti sulla gestione dei server:*
+*Troverete progetti sulla gestione dei server di NodeJs in:*
 
   - *Javascript*
   - *Typescript*
 
-*Nel repository troverete inoltre un **Dispatcher**, ovvero il thread che legge le richieste provenienti dal client e le elabora per restiruire una risposta.
+*Ed esercizi con il database NO_SQl MongoDB*
+
+*Nella sezione NodeJs troverete inoltre un **Dispatcher**, ovvero il thread che legge le richieste provenienti dal client e le elabora per restiruire una risposta.
 Il dispatcher che abbiamo creato è testato e funzionante, pronto per essere utilizzato in tutti gli esercizi.*
 
 *Per clonare il repository:*

@@ -1,6 +1,6 @@
 <h1 align="center">Sezione Node Js</h1>
 
-*E‟ la base di una piattaforma denominata MEAN (Mongo, Express, Angular, Node) mirata alla
+*E' la base di una piattaforma denominata MEAN (Mongo, Express, Angular, Node) mirata alla
 realizzazione di applicazioni web di tipo client server interamente basate sul linguaggio JavaScript,
 arricchito con diverse funzionalità server side.
 Mongo = database
@@ -16,4 +16,4 @@ Caratteristiche:
 Nodejs gestisce tutte le principali
 attività in modo asincrono, sfruttando
 al massimo l‟approccio event-loop tipico
-di javascript. *
+di javascript.*

@@ -499,3 +499,134 @@ mongoClient.connect(CONNSTRING,function(err,client){
     console.log("Errore nella connessione al database");
   }
 })
+
+//query 17
+// mongoClient.connect(CONNSTRING,function(err,client){
+//   if(!err)
+//   {
+//     //andiamo ad accedere al database 5B_studenti
+//     let db = client.db(DBNAME);
+//     //prendiamo tramite il metodo collection l'elemento studenti
+//     let collection = db.collection("Unicorns");
+//     collection.deleteMany({loves: {$in:['apple','grape']}},function(err,data){
+//       if(!err)
+//       {
+//         console.log("Query 16: eliminati gli unicorni", data);
+//       }
+//       else
+//       {
+//         console.log("errore esecuzione query " + err.message);
+//       }
+//       client.close();
+//     });
+//   }
+//   else
+//   {
+//     console.log("Errore nella connessione al database");
+//   }
+// })
+
+//query 18
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.find({$and:[{gender: 'f'}]}).project({name: 1, vampires: 1}).toArray(function(err,data){
+      if(!err)
+      {
+        console.log("Query 18:  " , data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+//query 19
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.find({$and:[{gender: 'm'}]}).project({name: 1, vampires: 1}).toArray(function(err,data){
+      if(!err)
+      {
+        console.log("Query 19:  " , data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+//query 20
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.replaceOne({name: "Pilot"},{"name":"Gianni",  "dob":"1999-12-21", "loves": ["grape", "watermelon"], "weight":500, "gender":"m", "vampires": 29, "hair":"black"},function(err,data){
+      if(!err)
+      {
+        console.log("Query 20: sostituito l'unicrono pilot con un altro", data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+
+//query 21
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.find({$and:[{gender:'m'},{loves: {$nin:['apple']}}]}).toArray(function(err,data){
+      if(!err)
+      {
+        console.log("Query 20:  " , data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})

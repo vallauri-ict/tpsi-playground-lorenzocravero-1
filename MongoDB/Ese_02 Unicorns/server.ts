@@ -411,3 +411,91 @@ mongoClient.connect(CONNSTRING,function(err,client){
     console.log("Errore nella connessione al database");
   }
 })
+
+//query 14
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.find({$and:[{loves: {$in:['apple','carrot']}}, {weight: {$gt: 550}}]}).toArray(function(err,data){
+      if(!err)
+      {
+        console.log("Query 14:  " , data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+//query 15
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.insertOne({"name": "topo", "gender": "m", "loves" : ['apple','grape']},function(err,data){
+      if(!err)
+      {
+        console.log("Query 15a: unicorno inserito", data);
+        collection.deleteMany({name : "topo"},function(err,data){
+          if(!err)
+          {
+            console.log("Query 15b: unicorno eliminato correttamente ", data)
+          }
+          else
+          {
+            console.log("errore esecuzione query " + err.message);
+          }
+          client.close();
+        });
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+//query 16
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.updateOne({name:"Pilot"},{$inc:{vampires:1}},function(err,data){
+      if(!err)
+      {
+        console.log("Query 16: vampiri incrementati ", data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})

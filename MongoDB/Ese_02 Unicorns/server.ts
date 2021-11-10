@@ -630,3 +630,108 @@ mongoClient.connect(CONNSTRING,function(err,client){
     console.log("Errore nella connessione al database");
   }
 })
+
+//query bonus 1
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.updateOne({name: "Pilot"},{$inc:{vampires:1}},{upsert:true},function(err,data){
+      if(!err)
+      {
+        console.log("Query bonus 1: unicorno sostituito", data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+//query bonus 2
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.updateMany({vaccinated : {$exists:false}},{$set:{vaccinated : true}},function(err,data){
+      if(!err)
+      {
+        console.log("Query bonus 2: unicorni tutti vaccinati", data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+
+//query bonus 3
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.deleteMany({loves : {$all:['grape','carrot']}},function(err,data){
+      if(!err)
+      {
+        console.log("Query bonus 3: unicorni che amanao uva e carote rimossi", data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})
+
+//query bonus 4
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    //prendiamo tramite il metodo collection l'elemento studenti
+    let collection = db.collection("Unicorns");
+    collection.find({gender : 'f'}).project({_id: 0, name: 1, vampires: 1}).sort({vampires : -1}).limit(1).toArray(function(err,data){
+      if(!err)
+      {
+        console.log("Query bonus 4 unicorno femmina con più kill:  " , data);
+      }
+      else
+      {
+        console.log("errore esecuzione query " + err.message);
+      }
+      client.close();
+    });
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+})

@@ -55,7 +55,79 @@ mongoClient.connect(CONNSTRING,function(err,client){
       {$group:{_id: "$cust_id", avgAmount: {$avg : "$amount"}, avgTotal : {$avg: {$multiply : ["$qta" ,"$amount"]}}}}
     ]).toArray();
     req.then(function(data){
-      console.log("Query 1: ", data);
+      console.log("Query 2: ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//query 3
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Unicorns");
+    let req = collection.aggregate([{"$match" : {"gender" : {$exists : true}}},{$group:{"_id":"$gender","totale" : {"$sum" : 1}}}]).toArray();
+    req.then(function(data){
+      console.log("Query 3 : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//query 4
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Unicorns");
+    let req = collection.aggregate([{$group:{"_id": {"gender" : "$gender"},"mediaVampiri" : {"$avg" : "$vampires"}}}]).toArray();
+    req.then(function(data){
+      console.log("Query 4 : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//query 5
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Unicorns");
+    let req = collection.aggregate([{$group:{"_id": {"gender" : "$gender", "hair" : "$hair"},"nEsemplari" : {"$sum" : 1}}},{"$sort" : {"nEsemplari" : -1, "_id" : -1}}]).toArray();
+    req.then(function(data){
+      console.log("Query 5 : ", data);
     });
     req.catch(function(err){
       console.log("errore nell'esecuzione della query " + err);

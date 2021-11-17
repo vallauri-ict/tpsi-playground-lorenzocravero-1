@@ -141,3 +141,167 @@ mongoClient.connect(CONNSTRING,function(err,client){
     console.log("Errore nella connessione al database");
   }
 });
+
+//query 6
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Unicorns");
+    //in questo caso dobbiamo fare un gruppo fittizio lasciando l'id vuoto perchè ci serve una media su TUTTO 
+    //il recordset
+    let req = collection.aggregate([{$group:{"_id": {},"mediaVampiri" : {"$avg" : "$vampires"}}},{"$project" : {"_id" : 0, "mediaVampiri" : {$round : "$mediaVampiri"}}}]).toArray();
+    req.then(function(data){
+      console.log("Query 6 : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//query 7
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Quizzes");
+    //in questo caso dobbiamo fare un gruppo fittizio lasciando l'id vuoto perchè ci serve una media su TUTTO 
+    //il recordset
+    let req = collection.aggregate([
+      {$project : {"quizAvg" : {$avg : "$quizzes"},"labAvg" : {$avg : "$labs"}, "examAvg" : {$avg : ["$final", "$midterm"]}}},
+      {$project : {"_id" : 0, "quizAvg" : {$round : "$quizAvg"}, "labAvg" : {$round : "$labAvg"}, "examAvg" : {$round : "$examAvg"}}},
+      {$group : {"_id" : {}, "mediaQuiz" : {$avg : "$quizAvg"}, "mediaLab" : {$avg : "$labAvg"}, "mediaExam": {$avg : "$examAvg"}}}]).toArray();
+    req.then(function(data){
+      console.log("Query 7 della madonna : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//query 8
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Students");
+    //in questo caso dobbiamo fare un gruppo fittizio lasciando l'id vuoto perchè ci serve una media su TUTTO 
+    //il recordset
+    let req = collection.aggregate([
+      {$match : {"genere" : "f"}},
+      {$project : {"nome" : 1, "mediaVoto" : {$avg : "$voti"}}},
+      {$sort : {"mediaVoto": -1}},
+      {$skip : 1},
+      {$limit : 1}
+    ]).toArray();
+    req.then(function(data){
+      console.log("Query 8 : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//query 9
+mongoClient.connect(CONNSTRING, function (err, client) {
+  if (!err) {
+    let regex = new RegExp("f", "i"); //con la i la ricerca è case unsensitive
+    let db = client.db(DBNAME);
+    let collection = db.collection("Orders");
+    let req = collection.aggregate([{ $project: { "status": 1, "nDettagli": 1 } },
+     { $unwind: "$nDettagli" }, 
+     { $group: { _id: "$status", "sommaDettagli": { $sum: "$nDettagli" } } }
+
+    ]).toArray();
+    req.then(function (data) {
+      console.log("Query 9 : ", data);
+    });
+    req.catch(function (err) {
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function () {
+      client.close();
+    })
+  }
+  else {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+
+//QUERY BONUS
+
+//query bonus 1
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Students");
+    let req = collection.aggregate([{$group : {_id : "$classe" , "nAlunni" : {$sum : 1}}}]).toArray();
+    req.then(function(data){
+      console.log("Query bonus 1 : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});
+
+//quey bonus 2
+mongoClient.connect(CONNSTRING,function(err,client){
+  if(!err)
+  {
+    //andiamo ad accedere al database 5B_studenti
+    let db = client.db(DBNAME);
+    let collection = db.collection("Students");
+    let req = collection.aggregate([{$group : {_id : "$classe", "mediaClasse" : {$avg : {$avg : "$voti"}}}}]).toArray();
+    req.then(function(data){
+      console.log("Query bonus 2 : ", data);
+    });
+    req.catch(function(err){
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function(){
+      client.close();
+    })
+  }
+  else
+  {
+    console.log("Errore nella connessione al database");
+  }
+});

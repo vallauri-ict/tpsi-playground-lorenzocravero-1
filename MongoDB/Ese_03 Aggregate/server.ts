@@ -255,6 +255,28 @@ mongoClient.connect(CONNSTRING, function (err, client) {
   }
 });
 
+//query 10
+mongoClient.connect(CONNSTRING, function (err, client) {
+  if (!err) {
+    let regex = new RegExp("f", "i"); //con la i la ricerca è case unsensitive
+    let db = client.db(DBNAME);
+    let collection = db.collection("Students");
+    let req = collection.find({$expr : {$gte : [{$year : "$nato"},2000]}}).toArray();
+    req.then(function (data) {
+      console.log("Query 10 : ", data);
+    });
+    req.catch(function (err) {
+      console.log("errore nell'esecuzione della query " + err);
+    });
+    req.finally(function () {
+      client.close();
+    })
+  }
+  else {
+    console.log("Errore nella connessione al database");
+  }
+});
+
 
 //QUERY BONUS
 

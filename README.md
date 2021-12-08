@@ -2,6 +2,7 @@
 
 <h1 align="center">
   <a href="https://www.html.it/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/512px-HTML5_logo_and_wordmark.svg.png" width="150px" /></a>
+  <a href="https://nodejs.org/it/"><img src="https://banner2.cleanpng.com/20180425/jrw/kisspng-node-js-javascript-web-application-express-js-comp-5ae0f84e2a4242.1423638015246930701731.jpg" width="150px" /></a>
   <a href="https://www.javascript.com/"><img src="http://maurizioregoli.it/wp-content/uploads/2021/01/programmatore-siena-javascript-2752148-2284965.png" width="150px" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/1200px-Typescript_logo_2020.svg.png" width="150px" /></br></a>
 </h1>

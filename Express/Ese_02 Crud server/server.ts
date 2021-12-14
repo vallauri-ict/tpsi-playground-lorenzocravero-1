@@ -94,13 +94,10 @@ app.use("/",function(req,res,next){
 
 //modello di query con express con parametri come json
 app.get("/api/getCollections",(req,res,next)=>{
-  if(true)
-  {
   let db = req["client"].db(DBNAME);
-    let collection = db.collection();
-    let request = collection.find().toArray();
+    let request = db.listCollections().toArray();
     request.then(function(data){
-      res.send(collection);
+      res.send(data);
     });
 
     request.catch(function(err){
@@ -111,12 +108,7 @@ app.get("/api/getCollections",(req,res,next)=>{
       req["client"].close();
     });
   }
-  else
-  {
-    res.status(400).send("Parametro non trovato");
-    req["client"].close();
-  }
-});
+);
 
 
 /* **************************************************** */

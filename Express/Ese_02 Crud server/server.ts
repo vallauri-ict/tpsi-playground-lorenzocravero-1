@@ -124,7 +124,7 @@ app.get("/api/*", (req, res, next) => {
   let collection = db.collection(currentCollection);
   if (!id) 
   {
-    let request = collection.find().toArray();
+    let request = collection.find(req["query"]).toArray();
     request.then(function(data){
       res.send(data);
     });
@@ -141,7 +141,7 @@ app.get("/api/*", (req, res, next) => {
   {
     let oId = new _mongodb.ObjectId(id);
 
-    let request = collection.find({"_id" : oId}).toArray();
+    let request = collection.findOne({"_id" : oId});
     request.then(function(data){
       res.send(data);
     });
@@ -155,6 +155,96 @@ app.get("/api/*", (req, res, next) => {
     });
   }
 });
+
+
+app.post("/api/*", function (req, res, next) {
+  let db = req["client"].db(DBNAME) as _mongodb.Db;
+  let collection = db.collection(currentCollection); //currentColletion è una stringa
+  console.log(req[""])
+
+  let request = collection.insertOne(req["body"]);
+
+  request.then((data) => {
+    res.send(data);
+  });
+
+  request.catch((err) => {
+    res.status(503).send("Errore nella query");
+  });
+
+  request.finally(() => {
+    req["client"].close();
+  });
+});
+
+
+
+app.delete("/api/*",function(req,res,next){
+
+  let _id = new _mongodb.ObjectId(id);
+  let db = req["client"].db(DBNAME) as _mongodb.Db;
+  let collection = db.collection(currentCollection); //currentColletion è una stringa
+
+  let request = collection.deleteOne({"_id" : _id});
+
+  request.then((data) => {
+    res.send(data);
+  });
+
+  request.catch((err) => {
+    res.status(503).send("Errore nella query");
+  });
+
+  request.finally(() => {
+    req["client"].close();
+  });
+})
+
+
+
+app.patch("/api/*",function(req,res,next){
+
+  let _id = new _mongodb.ObjectId(id);
+  let db = req["client"].db(DBNAME) as _mongodb.Db;
+  let collection = db.collection(currentCollection); //currentColletion è una stringa
+
+  let request = collection.updateOne({"_id" : _id},{$set : req["body"]});
+
+  request.then((data) => {
+    res.send(data);
+  });
+
+  request.catch((err) => {
+    res.status(503).send("Errore nella query");
+  });
+
+  request.finally(() => {
+    req["client"].close();
+  });
+})
+
+
+
+app.put("/api/*",function(req,res,next){
+
+  let _id = new _mongodb.ObjectId(id);
+  let db = req["client"].db(DBNAME) as _mongodb.Db;
+  let collection = db.collection(currentCollection); //currentColletion è una stringa
+
+  let request = collection.replaceOne({"_id" : _id},{$set : req["body"]});
+
+  request.then((data) => {
+    res.send(data);
+  });
+
+  request.catch((err) => {
+    res.status(503).send("Errore nella query");
+  });
+
+  request.finally(() => {
+    req["client"].close();
+  });
+})
 
 
 
@@ -173,5 +263,5 @@ app.use("/", (req, res, next) => {
 
 //route per la gestione dell'errore
 app.use(function (err, req, res, next) {
-  console.log("Errore lato server " + err.message);
+  console.log("************************** Errore lato server " + err.message + "*********************************");
 });

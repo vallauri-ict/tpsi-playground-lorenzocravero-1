@@ -7,19 +7,20 @@ import * as _fs from "fs";
 import * as _mongodb from "mongodb";
 import * as _bodyparser from "body-parser";
 import { inherits } from "util";
+import _cors from "cors";
 
 const app = express();
 const mongoClient = _mongodb.MongoClient;
+const CONNSTRING = process.env.MONGODB_URI || "mongodb://lorenzocravero:lollo@cluster0-shard-00-00.iwwbt.mongodb.net:27017,cluster0-shard-00-01.iwwbt.mongodb.net:27017,cluster0-shard-00-02.iwwbt.mongodb.net:27017/test?replicaSet=atlas-gt4d36-shard-0&ssl=true&authSource=admin"; //prendiamo la stringa di connessione da heroku
 //const CONNECTIONSTRING = "mongodb://127.0.0.1:27017";
-const CONNSTRING =
-  "mongodb://lorenzocravero:lollo@cluster0-shard-00-00.iwwbt.mongodb.net:27017,cluster0-shard-00-01.iwwbt.mongodb.net:27017,cluster0-shard-00-02.iwwbt.mongodb.net:27017/test?replicaSet=atlas-gt4d36-shard-0&ssl=true&authSource=admin";
+//const CONNSTRING = "mongodb://lorenzocravero:lollo@cluster0-shard-00-00.iwwbt.mongodb.net:27017,cluster0-shard-00-01.iwwbt.mongodb.net:27017,cluster0-shard-00-02.iwwbt.mongodb.net:27017/test?replicaSet=atlas-gt4d36-shard-0&ssl=true&authSource=admin";
 const DBNAME = "unicorns";
-const PORT = 1337;
+const port = process.env.PORT || 1337;
 
 const server = _http.createServer(app);
 
-server.listen(PORT, () => {
-  console.log("Server in ascolto sulla porta: " + PORT);
+server.listen(port, () => {
+  console.log("Server in ascolto sulla porta: " + port);
   init();
 });
 
@@ -65,6 +66,25 @@ app.use("/", (req, res, next) => {
   }
   next();
 });
+
+
+// 5) middleware cors
+const whitelist = ["http://localhost:4200", "http://localhost:1337", "https://lorenzocravero-crud-server.herokuapp.com"];
+const corsOptions = {
+ origin: function(origin, callback) {
+ if (!origin)
+ return callback(null, true);
+ if (whitelist.indexOf(origin) === -1) {
+ var msg = 'The CORS policy for this site does not ' +
+ 'allow access from the specified Origin.';
+ return callback(new Error(msg), false);
+ }
+ else
+ return callback(null, true);
+ },
+ credentials: true
+};
+app.use("/", _cors(corsOptions));
 
 /* **************************************************** */
 /// Elenco delle route di risposta al client

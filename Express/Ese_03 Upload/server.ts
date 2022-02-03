@@ -9,6 +9,9 @@ import * as _bodyparser from "body-parser";
 import fileUpload, * as _fileUpload from "express-fileupload";
 import { inherits } from "util";
 import _cors from "cors";
+import cloudinary, { UploadApiResponse } from "cloudinary";
+import environment from "./environment.json";
+import { execPath } from "process";
 
 const app = express();
 const mongoClient = _mongodb.MongoClient;
@@ -20,8 +23,12 @@ const CONNSTRING =
 const DBNAME = "5B";
 const port = process.env.PORT || 1337;
 
-//importiamo il file con le configurazioni cloudinary
-import cloudinary from "./environment.json";
+//impostazione config cloudinary
+cloudinary.v2.config({
+  cloud_name: environment.cloud_name,
+  api_key: environment.apy_key,
+  api_secret: environment.api_secret,
+});
 
 //lista che indica chi può accedere al server
 const whitelist = [
@@ -31,9 +38,8 @@ const whitelist = [
   /*"http://lorenzocravero-crud-server.herokuapp.com"*/
 ];
 
-
+//creazione e ascolto del server
 const server = _http.createServer(app);
-
 server.listen(port, () => {
   console.log("Server in ascolto sulla porta: " + port);
   init();
@@ -97,17 +103,26 @@ const corsOptions = {
 };
 app.use("/", _cors(corsOptions) as any);
 
-// 6) file upload
-//stabiliamo la dimensione massima dell'immagine
-app.use(fileUpload({
-  "limits ": { "fileSize ": (10 * 1024 * 1024) } // 10 MB
- }));
+// 6) binary file upload
+app.use(
+  fileUpload({
+    "limits ": { "fileSize ": 10 * 1024 * 1024 }, // 10 MB --> limita la dimensione dell'immagine
+  })
+);
+
+// 7) base64 file upload
+app.use(
+  "/",
+  express.json({
+    limit: "10mb", //limita la dimensione di un parametro post
+  })
+);
 
 /* **************************************************** */
 /// Elenco delle route di risposta al client
 /* **************************************************** */
 
-//middleware di aprtura della connessione
+//middleware di apertura della connessione
 app.use("/", function (req, res, next) {
   mongoClient.connect(CONNSTRING, function (err, client) {
     if (err) {
@@ -119,7 +134,7 @@ app.use("/", function (req, res, next) {
   });
 });
 
-//middleware per la richiesta get
+//middleware GET
 app.get("/api/images", (req, res, next) => {
   let db = req["client"].db(DBNAME);
   let collection = db.collection("images");
@@ -137,18 +152,19 @@ app.get("/api/images", (req, res, next) => {
   });
 });
 
+//middleware POST
 app.post("/api/uploadBinary", function (req, res, next) {
   if (!req.files || Object.keys(req.files).length == 0) {
     res.status(400).send("No files were uploaded");
   } else {
     let file = req.files.img as _fileUpload.UploadedFile;
-    file.mv(__dirname + "/static/img/" + file["name"], function (err) {
+    file.mv("./static/img/" + file["name"], function (err) {
       if (err) {
         res.status(500).json(err.message);
       } else {
         let db = req["client"].db(DBNAME);
         let collection = db.collection("images");
-        let user = { "username": req["body"].username, "img": file.name };
+        let user = { username: req["body"].username, img: file.name };
         let request = collection.insertOne(user);
         request.then(function (data) {
           res.send(data);
@@ -166,10 +182,88 @@ app.post("/api/uploadBinary", function (req, res, next) {
   }
 });
 
-app.post("/api/uploadBase64",(req,res,next) => {
+app.post("/api/uploadBase64", (req, res, next) => {
   let db = req["client"].db(DBNAME);
+  let collection = db.collection("images");
+  let request = collection.insertOne(req["body"]);
+  request.then(function (data) {
+    res.send(data);
+  });
+
+  request.catch(function (err) {
+    res.status(500).send("Errore nell'esecuzione della query" + err);
+  });
+
+  request.finally(function () {
+    req["client"].close();
+  });
+});
+
+app.post("/api/cloudinaryBase64", (req, res, next) => {
+  cloudinary.v2.uploader
+    .upload(req["body"].img, {
+      folder: "5binf/Ese_03 Upload",
+      use_filename: true,
+    })
+    .catch((error) => {
+      res.status(500).send("error uploading file");
+    })
+    .then((result: UploadApiResponse) => {
+      //res.send({"url":result.secure_url})
+      let db = req["client"].db(DBNAME);
+      let collection = db.collection("images");
+      let user = {
+        username: req["body"].username,
+        img: result.secure_url,
+      };
+      let request = collection.insertOne(user);
+      request.then(function (data) {
+        res.send(data);
+      });
+
+      request.catch(function (err) {
+        res.status(500).send("Errore nell'esecuzione della query" + err);
+      });
+
+      request.finally(function () {
+        req["client"].close();
+      });
+    });
+});
+
+app.post("/api/cloudinaryBinary", (req, res, next) => {
+  if (!req.files || Object.keys(req.files).length == 0) 
+  {
+    res.status(400).send("No files were uploaded");
+  } 
+  else 
+  {
+    let file = req.files.img as _fileUpload.UploadedFile;
+    let path = "./static/img/" + file["name"];
+    file.mv(path, function (err) {
+      if (err) 
+      {
+        res.status(500).json(err.message);
+      }
+    });
+    cloudinary.v2.uploader
+      .upload(execPath, 
+      {
+        folder: "5binf/Ese_03 Upload",
+        use_filename: true,
+      })
+      .catch((error) => {
+        res.status(500).send("error uploading file");
+      })
+      .then((result: UploadApiResponse) => {
+        let db = req["client"].db(DBNAME);
         let collection = db.collection("images");
-        let request = collection.insertOne(req["body"]);
+        let user = 
+        {
+          username: req["body"].username,
+          img: file.name,
+        };
+        let request = collection.insertOne(user);
         request.then(function (data) {
           res.send(data);
         });
@@ -181,6 +275,8 @@ app.post("/api/uploadBase64",(req,res,next) => {
         request.finally(function () {
           req["client"].close();
         });
+      });
+  }
 });
 
 /* **************************************************** */

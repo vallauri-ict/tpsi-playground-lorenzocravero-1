@@ -75,7 +75,7 @@ $(document).ready(function() {
  });
 
 
- $("#btnCloudinary").on("click", function() {
+ $("#btnCloudinaryBase64").on("click", function() {
 	let file = txtFile.prop('files')[0]	
 	if (!file || !txtUser.val()){
 		alert("prego, inserire uno username e scegliere un file")
@@ -86,7 +86,7 @@ $(document).ready(function() {
 	let reader = new FileReader();   
 	reader.readAsDataURL(file) 
 	reader.onload = function(){	
-		let rq = inviaRichiesta("POST", "/api/cloudinary", 
+		let rq = inviaRichiesta("POST", "/api/cloudinaryBase64", 
 						{"username":txtUser.val(), "img":reader.result})
 		rq.fail(errore)
 		rq.done(function(data){
@@ -95,6 +95,31 @@ $(document).ready(function() {
 		})
 
 	}
+ });
+
+
+
+ $("#btnCloudinaryBinary").on("click", function() {
+	let file = txtFile.prop('files')[0]
+	let username = txtUser.val()
+	if (!file || !txtUser.val()){
+		alert("prego, inserire uno username e scegliere un file")
+		return;
+	}
+	
+	let form = $("form").get(0)
+	let formData = new FormData();		
+	formData.append('username', username);		
+	formData.append('img', file);		
+			
+	// l'upload delle immagini NON può essere eseguito in GET
+	//per i formData la richiesta è lehggermente diversa da quella classica 
+	let rq = inviaRichiestaMultipart("POST", "/api/cloudinaryBinary", formData);
+	rq.fail(errore)
+	rq.done(function(data){
+		alert("upload eseguito correttamente")
+		aggiornaTabella()
+	})
  });
 });
 

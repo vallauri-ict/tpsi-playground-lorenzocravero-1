@@ -114,7 +114,7 @@ $(document).ready(function() {
 			
 	// l'upload delle immagini NON può essere eseguito in GET
 	//per i formData la richiesta è lehggermente diversa da quella classica 
-	let rq = inviaRichiestaMultipart("POST", "/api/cloudinaryBinary", formData);
+	let rq = inviaRichiestaMultipart("POST","/api/cloudinaryBinary", formData);
 	rq.fail(errore)
 	rq.done(function(data){
 		alert("upload eseguito correttamente")

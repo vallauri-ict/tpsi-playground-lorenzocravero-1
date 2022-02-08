@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 import express from "express";
 import * as _http from "http";
@@ -12,22 +12,18 @@ import _cors from "cors";
 import cloudinary, { UploadApiResponse } from "cloudinary";
 import environment from "./environment.json";
 import { execPath } from "process";
+import { url } from "inspector";
 
 const app = express();
 const mongoClient = _mongodb.MongoClient;
-const CONNSTRING =
-  process.env.MONGODB_URI ||
-  "mongodb://lorenzocravero:lollo@cluster0-shard-00-00.iwwbt.mongodb.net:27017,cluster0-shard-00-01.iwwbt.mongodb.net:27017,cluster0-shard-00-02.iwwbt.mongodb.net:27017/test?replicaSet=atlas-gt4d36-shard-0&ssl=true&authSource=admin"; //prendiamo la stringa di connessione da heroku
-//const CONNECTIONSTRING = "mongodb://127.0.0.1:27017";
-//const CONNSTRING = "mongodb://lorenzocravero:lollo@cluster0-shard-00-00.iwwbt.mongodb.net:27017,cluster0-shard-00-01.iwwbt.mongodb.net:27017,cluster0-shard-00-02.iwwbt.mongodb.net:27017/test?replicaSet=atlas-gt4d36-shard-0&ssl=true&authSource=admin";
 const DBNAME = "5B";
 const port = process.env.PORT || 1337;
 
 //impostazione config cloudinary
 cloudinary.v2.config({
-  cloud_name: environment.cloud_name,
-  api_key: environment.apy_key,
-  api_secret: environment.api_secret,
+  cloud_name: environment.CLOUDINARY.cloud_name,
+  api_key: environment.CLOUDINARY.apy_key,
+  api_secret: environment.CLOUDINARY.api_secret,
 });
 
 //lista che indica chi può accedere al server
@@ -73,9 +69,9 @@ app.use("/", (req, res, next) => {
 //se lo trova li restituisce, altrimenti fa next ed il controllo passa all'app.use successiva
 app.use("/", express.static("./static"));
 
-// 3)route di lettura dei parametri POST
-app.use("/", _bodyparser.json());
-app.use("/", _bodyparser.urlencoded({ extended: true }));
+// 3)route di lettura dei parametri POST con impostazione del limite per img base64
+app.use("/", _bodyparser.json({"limit" : "10mb"}));
+app.use("/", _bodyparser.urlencoded({ extended: true , "limit" : "10mb"}));
 
 // 4)log dei parametri
 app.use("/", (req, res, next) => {
@@ -110,13 +106,6 @@ app.use(
   })
 );
 
-// 7) base64 file upload
-app.use(
-  "/",
-  express.json({
-    limit: "10mb", //limita la dimensione di un parametro post
-  })
-);
 
 /* **************************************************** */
 /// Elenco delle route di risposta al client
@@ -124,7 +113,7 @@ app.use(
 
 //middleware di apertura della connessione
 app.use("/", function (req, res, next) {
-  mongoClient.connect(CONNSTRING, function (err, client) {
+  mongoClient.connect(process.env.MONGODB_URI || environment.CONNECTIONSTRING, function (err, client) {
     if (err) {
       res.status(503).send("Errore di connessione al database");
     } else {
@@ -231,53 +220,48 @@ app.post("/api/cloudinaryBase64", (req, res, next) => {
     });
 });
 
+
+
 app.post("/api/cloudinaryBinary", (req, res, next) => {
-  if (!req.files || Object.keys(req.files).length == 0) 
+  if (!req.files || Object.keys(req.files).length == 0 || !req.body.username) 
   {
     res.status(400).send("No files were uploaded");
   } 
-  else 
-  {
-    let file = req.files.img as _fileUpload.UploadedFile;
-    let path = "./static/img/" + file["name"];
+  else {
+    let file = req.files.img as fileUpload.UploadedFile;
+    let path = './static/img/' + file["name"];
     file.mv(path, function (err) {
-      if (err) 
-      {
+      if (err){
         res.status(500).json(err.message);
       }
-    });
-    cloudinary.v2.uploader
-      .upload(execPath, 
-      {
-        folder: "5binf/Ese_03 Upload",
-        use_filename: true,
-      })
-      .catch((error) => {
-        res.status(500).send("error uploading file");
-      })
-      .then((result: UploadApiResponse) => {
-        let db = req["client"].db(DBNAME);
-        let collection = db.collection("images");
-        let user = 
-        {
-          username: req["body"].username,
-          img: file.name,
-        };
-        let request = collection.insertOne(user);
-        request.then(function (data) {
-          res.send(data);
-        });
-
-        request.catch(function (err) {
-          res.status(500).send("Errore nell'esecuzione della query" + err);
-        });
-
-        request.finally(function () {
-          req["client"].close();
-        });
-      });
+      else {
+        cloudinary.v2.uploader.upload(path, { folder: "5binf/Ese_03 Upload", use_filename: true }) //il primo è il path dove leggere l immagine 
+        .catch((error) => {
+          res.status(500).send("error uploading file to cloudinary")
+        })
+        .then((result: UploadApiResponse) => {
+          //res.send({"url":result.secure_url})
+          let db = req["client"].db(DBNAME);
+          let collection = db.collection("images");
+          let user = {
+            "username": req.body.username,
+            "img": result.secure_url
+          }
+          let request = collection.insertOne(user);
+          request.then((data) => {
+            res.send(data);
+          });
+          request.catch((err) => {
+            res.status(503).send("Sintax error in the query");
+          });
+          request.finally(() => {
+            req["client"].close();
+          });
+        })
+      }
+    })
   }
-});
+})
 
 /* **************************************************** */
 /// Elenco delle route di gestione dell'errore

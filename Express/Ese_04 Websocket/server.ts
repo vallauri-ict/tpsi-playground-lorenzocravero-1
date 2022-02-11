@@ -1,14 +1,20 @@
 "use strict";
-const http = require('http');
-const colors = require('colors');
-const express = require('express');
-const app = express()
-const server = http.createServer(app);
-const io = require('socket.io')(server);
+import http from 'http';
+import colors from 'colors';
+import  express from 'express';
+const app = express();
+const httpServer = http.createServer(app);
+import {Server, Socket} from 'socket.io';
+const io = new Server(httpServer)
 
 const PORT = 1337
 
-server.listen(PORT, function() {
+//nel browser devi scrivere 10.0.102.161337
+// httpServer.listen( PORT,'10.0.102.16', function() {
+//     console.log('Server listening on port ' + PORT);
+// });
+
+httpServer.listen( PORT, function() {
     console.log('Server listening on port ' + PORT);
 });
 
@@ -24,25 +30,31 @@ let users = [];
   Per ogni utente la funzione di callback crea una variabile locale
   'user' contenente tutte le informazioni relative al singolo utente  */
 
+  //tutte le volte che un client fa un connect gli viene inniettato il socket del client e tutti i clinet sono su thread separati
 io.on('connection', function(clientSocket) {
-	let user = {};
+	
+	let user = {} as {username:string,socket:Socket,room:string};
 
 	// 1) ricezione username
-	clientSocket.on('login', function(username) {
+	clientSocket.on('login', function(userInfo) {
+		userInfo =JSON.parse(userInfo);
 		// controllo se user esiste già
 		let item = users.find(function(item) {
-			return (item.username == username)
+			return (item.username == userInfo.username)
 		})
 		if (item != null) {
 			clientSocket.emit("loginAck", "NOK")
 		}
 		else{
-			user.username = username;
+			user.username = userInfo.username;
+			user.room = userInfo.room;
 			user.socket = clientSocket;
 			users.push(user);
 			clientSocket.emit("loginAck", "OK")
 			log('User ' + colors.yellow(user.username) +
 						" (sockID=" + user.socket.id + ') connected!');
+			//inserisco lo username nella stanza richiesta 
+			this.join(user.room)
 		}
 	});
 
@@ -56,7 +68,11 @@ io.on('connection', function(clientSocket) {
 			'message': msg,
 			'date': new Date()
 		}
-		io.sockets.emit('message_notify', JSON.stringify(response));
+		//spedisco a tutti cosi vedo anche i miei messaggi e ho un feedback mittente compreso
+		// io.sockets.emit('message_notify', JSON.stringify(response));
+
+		//con questa sintassi spedisco i messaggi solo alla stanza corretta
+	    io.to(user.room).emit('message_notify', JSON.stringify(response));
 	});
 
     // 3) disconnessione dell'utente
